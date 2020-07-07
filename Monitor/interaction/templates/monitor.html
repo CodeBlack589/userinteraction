@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  
+<style>
+div {
+  width: 300px;
+  height: 200px;
+  border: 1px solid black;
+}
+</style>
+</head>
+<body onclick="myFunction(event)" onclick="clearCoor()">
+
+
+<p>click above the box and get the coordinates of your mouse pointer.</p>
+
+
+<p id="demo"></p>
+<button value="Red" onclick="button(this)" class="btn btn-danger">Red</button>
+<button value="Green" onclick="button(this)" class="btn btn-success">Green</button>
+<button value="Black" onclick="button(this)" class="btn btn-dark">Black</button>
+<button value="Light" onclick="button(this)" class="btn btn-light">Light</button>
+<div style="height:400px;width:100%;overflow-y:scroll" id="div_data"></div>
+<script>
+    function button(obj){
+    var z=obj.value;
+    var chatSocket=new WebSocket('ws://'+window.location.host+'/ws/monitor/button/'+z+'/');
+            chatSocket.onmessage=function(e){
+                var data=JSON.parse(e.data)
+                var message=data['message']
+                var div=document.querySelector("#div_data");
+
+                div.innerHTML+='<div style="color:#fff;background:black;">'+message+'</div>';
+                
+            }
+    
+    }
+</script>
+
+<script>
+
+function myFunction(e) {
+  var x = e.clientX;
+  var y = e.clientY;
+  var chatSocket=new WebSocket('ws://'+window.location.host+'/ws/monitor/axis/'+x+'/get/'+y+'/');
+            chatSocket.onmessage=function(e){
+                var data=JSON.parse(e.data)
+                var message=data['message']
+                var div=document.querySelector("#div_data");
+
+                div.innerHTML+='<div style="color:black;background:yellow;">'+message+'</div>';
+                
+                
+            }
+    
+}
+
+
+function rtclickcheck(keyp){ if (navigator.appName == "Netscape" && keyp.which == 3){ 
+    alert("You Click Right Button");
+    var x=1
+    var chatSocket=new WebSocket('ws://'+window.location.host+'/ws/monitor/right/'+x+'/');
+            chatSocket.onmessage=function(e){
+                var data=JSON.parse(e.data)
+                var message=data['message']
+                var div=document.querySelector("#div_data");
+
+                div.innerHTML+='<div style="color:black;background:green;">'+message+'</div>';
+                
+                return false;
+            }
+    }
+
+if (navigator.appVersion.indexOf("MSIE") != -1 && event.button == 2) {alert("You Click Right Button");return false; } }
+
+document.onmousedown = rtclickcheck;
+
+</script>
+
+</body>
+</html>
